@@ -26,7 +26,7 @@ bot.on('message', async (ctx) => {
     const userId = currentMessage.from.id;
     let prevUserId = currentMessage.reply_to_message?.from?.id || prevMessage.from.id;
     if (constants.kekKeys.includes(text.toLowerCase())) {
-        if (currentMessage.from.is_bot) {
+        if (currentMessage.reply_to_message?.from?.is_bot) {
             ctx.reply('Бля ну какой поц додумался боту поставить кек? Бля ну сам виноват, перенаправляю Лукасу');
             prevUserId = constants.users.LUX.id;
         }
