@@ -28,6 +28,10 @@ bot.on('message', async (ctx) => {
         const fromUser = ctx.db.users.find(user => user.id === userId);
         const toUser = ctx.db.users.find(user => user.id === prevUserId);
 
+        if (!fromUser || !toUser) {
+            ctx.reply('Кто-то из дебиков не найден, нужно чтоб все были админами')
+        }
+
         ++toUser.kekNumber;
         --toUser.kekNumber;
 
@@ -66,7 +70,7 @@ const initUsers = async (ctx) => {
     const usersAdmins = allChatAdmins.filter(adm => !adm.user.is_bot);
     ctx.db.users = usersAdmins.map(userAdm => {
         const user = findUserById(userAdm.user.id);
-        return {...user, username: userAdm.user.username, kekNumber: 100};
+        return {...user, kekNumber: 100};
     });
 }
 
@@ -74,9 +78,9 @@ const collectUserStats = (users) => {
     return users.map(user => {
         let userTitle;
         if (user.id === constants.users.LUX.id) {
-            userTitle = `У самого ахуенного поскотовца <b>${user.username}</b>`
+            userTitle = `У самого ахуенного поскотовца <b>${user.name}</b>`
         } else {
-            userTitle = `У дебикса <b>${user.username}</b>`
+            userTitle = `У дебикса <b>${user.name}</b>`
         }
         return userTitle + ` - <b>${user.kekNumber}</b> кеков`
     }).join('\n');
