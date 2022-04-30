@@ -57,8 +57,14 @@ const processWrongUser = (userId, ctx) => {
 }
 
 const initUsers = async (ctx) => {
-    const allChatAdmins = (await ctx.getChatAdministrators(ctx.message.chat)).filter(adm => !adm.user.is_bot);
-    ctx.db.users = allChatAdmins.map(userAdm => {
+    let allChatAdmins;
+    try {
+        allChatAdmins = await ctx.getChatAdministrators(ctx.message.chat)
+    } catch (e) {
+        allChatAdmins = [];
+    }
+    const usersAdmins = allChatAdmins.filter(adm => !adm.user.is_bot);
+    ctx.db.users = usersAdmins.map(userAdm => {
         const user = findUserById(userAdm.user.id);
         return {...user, username: userAdm.user.username, kekNumber: 100};
     });

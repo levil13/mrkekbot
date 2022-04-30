@@ -4,7 +4,7 @@ const WELCOME_MESSAGE =
     '\n\nИ так, сейчас у всех по <b>100</b> кеков';
 
 const HELP_MESSAGE = 'Блять я бот для кеков, хули тебе еще помощь какая нужна?';
-const STATS_TITLE = 'Статистика кеказны на данный момент: \n\n';
+const STATS_TITLE = 'Статистика Кеказны на данный момент: \n\n';
 
 const KEK_KEYS = ['кек', 'kek', 'топкек', 'topkek', 'k3k'];
 
