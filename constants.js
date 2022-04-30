@@ -12,7 +12,7 @@ const USERS = {
     TRUF: {name: 'Дима', id: 448341870},
     ADD: {name: 'Эд', id: 337052957},
     LUX: {name: 'Лукас', id: 372958499},
-    KALASH: {name: 'Андрей', id: null},
+    KALASH: {name: 'Андрей', id: 261400005}
 }
 
 module.exports.welcomeMessage = WELCOME_MESSAGE;

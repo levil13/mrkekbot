@@ -8,7 +8,12 @@ bot.context.db = {users: null, prevMessage: null};
 bot.start(async (ctx) => await onBotStart(ctx));
 bot.help((ctx) => ctx.reply(constants.helpMessage));
 
-bot.command('stats', async (ctx) => await ctx.replyWithHTML(constants.statsTitle + collectUserStats(ctx.db.users)));
+bot.command('stats', async (ctx) => {
+    if (!ctx.db.users) {
+        ctx.reply('Пажжи сначала нужно написать /start')
+    }
+    await ctx.replyWithHTML(constants.statsTitle + collectUserStats(ctx.db.users))
+});
 bot.command('keys', async (ctx) => ctx.reply('Чтобы отправить кек можно написать: ' + constants.kekKeys.join(', ')));
 
 bot.on('message', async (ctx) => {
