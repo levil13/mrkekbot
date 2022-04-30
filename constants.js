@@ -3,10 +3,15 @@ const WELCOME_MESSAGE =
     '\n\nС этой минуты все кеки будут складываться в Кеказну, так что теперь и узнаем кто в этой вашей конфе самый смешной' +
     '\n\nИ так, сейчас у всех по <b>100</b> кеков';
 
-const HELP_MESSAGE = 'Блять я бот для кеков, хули тебе еще помощь какая нужна?';
+const HELP_MESSAGE = 'Блять я бот для кеков, хули тебе еще помощь какая нужна? \n\nДля доступных команд пиши /commands';
 const STATS_TITLE = 'Статистика Кеказны на данный момент: \n\n';
 
 const KEK_KEYS = ['кек', 'kek', 'топкек', 'topkek', 'k3k'];
+const commands = `
+/start - Запустить бота  
+/help - Помощь  
+/keys - Список слов для передачи кека
+`;
 
 const USERS = {
     TRUF: {name: 'Дима', id: 448341870},
@@ -20,3 +25,4 @@ module.exports.helpMessage = HELP_MESSAGE;
 module.exports.statsTitle = STATS_TITLE;
 module.exports.users = USERS;
 module.exports.kekKeys = KEK_KEYS;
+module.exports.commands = commands;

@@ -15,6 +15,7 @@ bot.command('stats', async (ctx) => {
     await ctx.replyWithHTML(constants.statsTitle + collectUserStats(ctx.db.users))
 });
 bot.command('keys', async (ctx) => ctx.reply('Чтобы отправить кек можно написать: ' + constants.kekKeys.join(', ')));
+bot.command('commands', async (ctx) => ctx.reply(constants.commands));
 
 bot.on('message', async (ctx) => {
     const currentMessage = ctx.message;
