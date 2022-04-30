@@ -23,6 +23,7 @@ bot.on('message', async (ctx) => {
     if (!prevMessage) return;
 
     const text = currentMessage.text;
+    if (!text) return;
     const userId = currentMessage.from.id;
     let prevUserId = currentMessage.reply_to_message?.from?.id || prevMessage.from.id;
     if (constants.kekKeys.includes(text.toLowerCase())) {
