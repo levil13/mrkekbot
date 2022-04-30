@@ -26,13 +26,14 @@ bot.on('message', async (ctx) => {
     const userId = currentMessage.from.id;
     let prevUserId = currentMessage.reply_to_message?.from?.id || prevMessage.from.id;
     if (constants.kekKeys.includes(text.toLowerCase())) {
-        if (prevUserId === userId) {
-            ctx.reply('Ты шо пес ахуел сам себе кеки ставить?');
-            return;
-        }
         if (currentMessage.from.is_bot) {
             ctx.reply('Бля ну какой поц додумался боту поставить кек? Бля ну сам виноват, перенаправляю Лукасу');
             prevUserId = constants.users.LUX.id;
+        }
+
+        if (prevUserId === userId) {
+            ctx.reply('Ты шо пес ахуел сам себе кеки ставить?');
+            return;
         }
 
         const fromUser = ctx.db.users.find(user => user.id === userId);
