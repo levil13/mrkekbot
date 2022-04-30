@@ -38,7 +38,7 @@ bot.on('message', async (ctx) => {
         }
 
         ++toUser.kekNumber;
-        --toUser.kekNumber;
+        --fromUser.kekNumber;
 
         await ctx.replyWithHTML(
             `<b>${fromUser.name}</b> задонатил кек дебику <b>${toUser.name}</b> \n\n` +
