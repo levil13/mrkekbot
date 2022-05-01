@@ -19,22 +19,24 @@ bot.on('message', async (ctx) => {
     const currentMessage = ctx.message;
     const previousMessage = localDB.prevMessage;
 
-    const isKekMsg = isKekMessage(currentMessage.text);
-    if (!isKekMsg) {
+    const isKekMsg = isSpecificMessage(currentMessage.text, constants.kekKeys);
+    const isNekekMsg = isSpecificMessage(currentMessage.text, constants.nekekKeys);
+
+    if (isKekMsg) {
+        await processKekMessage(currentMessage, previousMessage, ctx);
+    } else {
         localDB.prevMessage = currentMessage;
         updateDB();
     }
 
-    if (!previousMessage) return;
-
-    if (isKekMsg) {
-        await processKekMessage(currentMessage, previousMessage, ctx);
+    if (isNekekMsg) {
+        await processNekekMessage(currentMessage, ctx);
     }
 });
 
 bot.launch();
 
-const onBotStart = async (ctx) => {
+async function onBotStart(ctx) {
     const userId = ctx.message.from.id;
     if (userId !== constants.users.LUX.id) {
         processWrongUser(userId, ctx);
@@ -45,7 +47,7 @@ const onBotStart = async (ctx) => {
     await ctx.replyWithHTML(constants.welcomeMessage);
 }
 
-const onBotStats = async (ctx) => {
+async function onBotStats(ctx) {
     if (!localDB.users) {
         ctx.reply('Пажжи, людей не могу найти, сначала нужно написать /start');
         return;
@@ -53,7 +55,7 @@ const onBotStats = async (ctx) => {
     await ctx.replyWithHTML(constants.statsTitle + collectUserStats(localDB.users));
 }
 
-const onBotReset = async (ctx) => {
+async function onBotReset(ctx) {
     const userId = ctx.message.from.id;
     if (userId !== constants.users.LUX.id) {
         processWrongUser(userId, ctx);
@@ -64,21 +66,21 @@ const onBotReset = async (ctx) => {
     ctx.reply('Ресетнул лохов');
 }
 
-const processWrongUser = (userId, ctx) => {
+function processWrongUser(userId, ctx) {
     const user = findUserById(userId);
     ctx.reply(`${user.name}, ты шо поц? Я разрешаю себя перезагружать только Лукасу`);
 }
 
-const initUsers = async (ctx) => {
+async function initUsers(ctx) {
     const usersAdmins = await getUserAdmins(ctx.message.chat, ctx);
     localDB.users = usersAdmins.filter(admin => !admin.user.is_bot).map(userAdm => {
         const user = findUserById(userAdm.user.id);
-        return {...user, kekNumber: 100};
+        return {...user, kekNumber: 100, lastKekGivenToId: null};
     });
     updateDB();
 }
 
-const getUserAdmins = async (chatId, ctx) => {
+async function getUserAdmins(chatId, ctx) {
     try {
         const chatAdmins = await ctx.getChatAdministrators(chatId);
         if (!chatAdmins?.length) {
@@ -91,7 +93,7 @@ const getUserAdmins = async (chatId, ctx) => {
     }
 }
 
-const collectUserStats = (users) => {
+function collectUserStats(users) {
     return users
         .sort((user1, user2) => {
             if (user1.kekNumber < user2.kekNumber) return 1;
@@ -102,7 +104,7 @@ const collectUserStats = (users) => {
         .join('\n');
 }
 
-const getUserTitle = (user) => {
+function getUserTitle(user) {
     if (user.id === constants.users.LUX.id) {
         return `У самого ахуенного поскотовца <b>${user.name}</b>`
     } else {
@@ -110,26 +112,27 @@ const getUserTitle = (user) => {
     }
 }
 
-const findUserById = (userId) => {
+function findUserById(userId) {
     let user = Object.values(constants.users).find(user => user.id === userId);
     if (!user) user = constants.users.KALASH;
     return user;
 }
 
-const isKekMessage = (text) => {
-    if (!text) return false;
-    const normalizedText = text.toLowerCase().replace(/\s/g, '');
-    return constants.kekKeys.includes(normalizedText);
+function normalizeText(text) {
+    return text.toLowerCase().replace(/\s/g, '');
 }
 
-const processKekMessage = async (currentMessage, previousMessage, ctx) => {
-    const currentUserId = currentMessage.from.id;
-    let previousUserId = currentMessage.reply_to_message?.from?.id || previousMessage.from.id;
+function isSpecificMessage(text, specificKeys) {
+    if (!text) return false;
+    return specificKeys.includes(normalizeText(text));
+}
 
-    if (currentMessage.reply_to_message?.from?.is_bot) {
-        ctx.reply('Бля ну какой поц додумался боту поставить кек?\nБля ну сам виноват, перенаправляю Лукасу');
-        previousUserId = constants.users.LUX.id;
+async function processKekMessage(currentMessage, previousMessage, ctx) {
+    if (!localDB.users) {
+        ctx.reply('Не могу отдать кек, юзеров нема, нужно написать /start');
     }
+    const currentUserId = currentMessage.from.id;
+    let previousUserId = getPreviousUserId(currentMessage, previousMessage, ctx);
 
     if (previousUserId === currentUserId) {
         ctx.reply('Ты шо пес ахуел сам себе кеки ставить?');
@@ -139,7 +142,31 @@ const processKekMessage = async (currentMessage, previousMessage, ctx) => {
     await giveKek(currentUserId, previousUserId, ctx);
 }
 
-const giveKek = async (fromUserId, toUserId, ctx) => {
+async function processNekekMessage(currentMessage, ctx) {
+    if (!localDB.users) {
+        ctx.reply('Не могу забрать кек, юзеров нема, нужно написать /start');
+    }
+    const currentUserId = currentMessage.from.id;
+
+    await revertKek(currentUserId, ctx);
+}
+
+function getPreviousUserId(currentMessage, previousMessage, ctx) {
+    if (currentMessage.reply_to_message) {
+        if (currentMessage.reply_to_message.from.is_bot) {
+            ctx.reply('Бля ну какой поц додумался боту поставить кек?\nБля ну сам виноват, перенаправляю Лукасу');
+            return constants.users.LUX.id;
+        }
+        return currentMessage.reply_to_message.from.id;
+    } else if (previousMessage) {
+        return previousMessage.from.id;
+    } else {
+        ctx.reply('Первый кек всегда Люксу');
+        return constants.users.LUX.id;
+    }
+}
+
+async function giveKek(fromUserId, toUserId, ctx) {
     const fromUser = localDB.users.find(user => user.id === fromUserId);
     const toUser = localDB.users.find(user => user.id === toUserId);
 
@@ -156,23 +183,51 @@ const giveKek = async (fromUserId, toUserId, ctx) => {
     --fromUser.kekNumber;
     ++toUser.kekNumber;
 
+    fromUser.lastKekGivenToId = toUserId;
+
+    updateDB();
+
+    await ctx.replyWithHTML(`Дебик <b>${fromUser.name}</b> задонатил кек дебику <b>${toUser.name}</b> \n\n`);
+}
+
+async function revertKek(fromUserId, ctx) {
+    const fromUser = localDB.users.find(user => user.id === fromUserId);
+    if (!fromUser.lastKekGivenToId) {
+        ctx.reply('Ты еще никому не давал кеков поц, шо ты отжать пытаешься?');
+        return;
+    }
+    const toUser = localDB.users.find(user => user.id === fromUser.lastKekGivenToId);
+
+    if (!fromUser || !toUser) {
+        ctx.reply('Не могу отправить кек, кто-то из дебиков не найден, нужно чтоб все были админами');
+        return;
+    }
+
+    if (fromUserId.kekNumber <= 0) {
+        ctx.reply('У этого бимжа не осталось кеков на счету, так что сорян, кек отправлен не будет');
+        return;
+    }
+
+    ++fromUser.kekNumber;
+    --toUser.kekNumber;
+    fromUser.lastKekGivenToId = null;
+
     updateDB();
 
     await ctx.replyWithHTML(
-        `Дебик <b>${fromUser.name}</b> задонатил кек дебику <b>${toUser.name}</b> \n\n` +
-        `Теперь у дебика <b>${fromUser.name}</b>  - <b>${fromUser.kekNumber}</b> кеков \n\n` +
-        `А у дебика <b>${toUser.name}</b> - <b>${toUser.kekNumber}</b> кеков`
+        `Дебик <b>${fromUser.name}</b> успешно отжал свой кек у <b>${toUser.name}</b> \n\n` +
+        `Знайте терь шо он крыса такая`
     );
 }
 
-const initDB = async (ctx) => {
+async function initDB(ctx) {
     localDB = JSON.parse(fs.readFileSync('db.json', {encoding: 'utf8'}));
     if (!localDB.users?.length) {
         await initUsers(ctx);
     }
 }
 
-const updateDB = () => {
+function updateDB() {
     fs.writeFileSync('db.json', JSON.stringify(localDB));
 }
 

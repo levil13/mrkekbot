@@ -7,6 +7,7 @@ const HELP_MESSAGE = 'Блять я бот для кеков, хули тебе 
 const STATS_TITLE = 'Статистика Кеказны на данный момент: \n\n';
 
 const KEK_KEYS = ['кек', 'kek', 'топкек', 'topkek', 'k3k'];
+const NE_KEK_KEYS = ['некек', 'nekek'];
 const commands = `
 /start - Запустить бота  
 /help - Помощь  
@@ -26,4 +27,5 @@ module.exports.helpMessage = HELP_MESSAGE;
 module.exports.statsTitle = STATS_TITLE;
 module.exports.users = USERS;
 module.exports.kekKeys = KEK_KEYS;
+module.exports.nekekKeys = NE_KEK_KEYS;
 module.exports.commands = commands;
