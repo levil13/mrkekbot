@@ -44,7 +44,6 @@ async function onBotStart(ctx) {
     }
 
     await initDB(ctx);
-    await ctx.replyWithHTML(constants.welcomeMessage);
 
     if (localDB.users) {
         await ctx.replyWithHTML(
