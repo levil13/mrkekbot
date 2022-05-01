@@ -11,7 +11,12 @@ bot.start(async (ctx) => await onBotStart(ctx));
 bot.help((ctx) => ctx.reply(constants.helpMessage));
 
 bot.command('stats', async (ctx) => await onBotStats(ctx));
-bot.command('keys', async (ctx) => ctx.reply('Чтобы отправить кек можно написать: ' + constants.kekKeys.join(', ')));
+bot.command('keys', async (ctx) => {
+    ctx.reply(
+        `Чтобы отправить кек можно написать: ${constants.kekKeys.join(', ')}\n
+        Чтобы забрать кек можно написать: ${constants.nekekKeys.join(', ')}`
+    );
+});
 bot.command('commands', async (ctx) => ctx.reply(constants.commands));
 bot.command('reset', async (ctx) => await onBotReset(ctx));
 
