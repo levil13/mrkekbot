@@ -71,7 +71,7 @@ const processWrongUser = (userId, ctx) => {
 
 const initUsers = async (ctx) => {
     const usersAdmins = await getUserAdmins(ctx.message.chat, ctx);
-    localDB.users = usersAdmins.map(userAdm => {
+    localDB.users = usersAdmins.filter(admin => !admin.user.is_bot).map(userAdm => {
         const user = findUserById(userAdm.user.id);
         return {...user, kekNumber: 100};
     });
