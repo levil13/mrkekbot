@@ -11,12 +11,7 @@ bot.start(async (ctx) => await onBotStart(ctx));
 bot.help((ctx) => ctx.reply(constants.helpMessage));
 
 bot.command('stats', async (ctx) => await onBotStats(ctx));
-bot.command('keys', async (ctx) => {
-    ctx.reply(
-        `Чтобы отправить кек можно написать: ${constants.kekKeys.join(', ')}\n
-        Чтобы забрать кек можно написать: ${constants.nekekKeys.join(', ')}`
-    );
-});
+bot.command('keys', async (ctx) => ctx.reply(`Чтобы отправить кек можно написать: ${constants.kekKeys.join(', ')}\nЧтобы забрать кек можно написать: ${constants.nekekKeys.join(', ')}`));
 bot.command('commands', async (ctx) => ctx.reply(constants.commands));
 bot.command('reset', async (ctx) => await onBotReset(ctx));
 
@@ -50,6 +45,16 @@ async function onBotStart(ctx) {
 
     await initDB(ctx);
     await ctx.replyWithHTML(constants.welcomeMessage);
+
+    if (localDB.users) {
+        await ctx.replyWithHTML(
+            constants.welcomeMessage + 'На данный момент статистика Кеказны следующая:\n\n' + collectUserStats(localDB.users)
+        );
+    } else {
+        await ctx.replyWithHTML(
+            constants.welcomeMessage + 'И так, сейчас у всех по <b>100</b> кеков'
+        );
+    }
 }
 
 async function onBotStats(ctx) {
