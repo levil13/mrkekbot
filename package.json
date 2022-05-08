@@ -12,7 +12,10 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.0.0",
-    "telegraf": "^4.8.1"
+    "input": "^1.0.1",
+    "lowdb": "github:dankreiger/lowdb#chore/esm-cjs-hybrid-WITH-LIB",
+    "telegraf": "^4.8.1",
+    "telegram": "^2.7.12"
   },
   "devDependencies": {
     "nodemon": "^2.0.16"
