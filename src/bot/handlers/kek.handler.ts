@@ -1,15 +1,14 @@
 import { Context } from 'telegraf';
 import { Api } from 'telegram';
 import { getTelegramClient } from '../../telegram/client';
-import { getDb, clearOldMessagesWithKek } from '../../db/database';
+import { clearOldMessagesWithKek, getDb } from '../../db/database';
 import { findUserById } from '../../utils/users';
 import { isSpecificMessage } from '../../utils/text';
-import { KEK_KEYS, NEKEK_KEYS, MR_KEK_ID } from '../../constants';
-import { MessageWithKek, User } from '../../db/models';
+import { KEK_KEYS, MR_KEK_ID, NEKEK_KEYS, USERS } from '../../constants';
 
 export async function handleKekMessage(ctx: Context): Promise<void> {
     const message = ctx.message as any;
-    const messageToKek = await getMessageToKek(message, ctx);
+    const messageToKek = await getMessageToKek(message);
     const messageToKekId: number = messageToKek.message_id ?? messageToKek.id;
     const messageToKekAuthor = getMessageAuthor(messageToKek, ctx);
 
@@ -41,7 +40,7 @@ export async function handleKekMessage(ctx: Context): Promise<void> {
 
         if (messageInDb?.kekedUsers.length === 3) {
             const tripleKekGainer = findUserById(messageToKek.from?.id ?? messageToKek.fromId?.userId);
-            await ctx.reply(`Ох нихуя, ${tripleKekGainer?.name} БОГОПОДОБЕН, он ловит три кека в ряд!`);
+            await ctx.reply(`Ох нихуя, ${ tripleKekGainer?.name } БОГОПОДОБЕН, он ловит три кека в ряд!`);
             db.data!.messagesWithKek.splice(db.data!.messagesWithKek.indexOf(messageInDb), 1);
             await db.write();
         }
@@ -85,7 +84,7 @@ async function giveKek(
     fromUser.lastKekGivenTo = { userId: toUserId, messageId };
 
     await db.write();
-    await ctx.replyWithHTML(`Дебик <b>${fromUser.name}</b> задонатил кек дебику <b>${toUser.name}</b>`);
+    await ctx.replyWithHTML(`Дебик <b>${ fromUser.name }</b> задонатил кек дебику <b>${ toUser.name }</b>`);
     return true;
 }
 
@@ -106,7 +105,7 @@ async function revertKek(fromUserId: number, ctx: Context): Promise<void> {
     }
 
     if (toUser.kekNumber <= 0) {
-        await ctx.reply('У этого бимжа не осталось кеков, так что сорян, отжать не выйдет');
+        await ctx.reply('У этого бимжа не осталось кеков, так что сорян, отжать не выйдет, придется накуканивать');
         return;
     }
 
@@ -126,10 +125,10 @@ async function revertKek(fromUserId: number, ctx: Context): Promise<void> {
 
     fromUser.lastKekGivenTo = null;
     await db.write();
-    await ctx.replyWithHTML(`Дебик <b>${fromUser.name}</b> успешно отжал свой кек у <b>${toUser.name}</b>\n\nЗнайте терь шо он крыса такая`);
+    await ctx.replyWithHTML(`Дебик <b>${ fromUser.name }</b> успешно отжал свой кек у <b>${ toUser.name }</b>\n\nЗнайте терь шо он крыса такая`);
 }
 
-async function getMessageToKek(currentMessage: any, ctx: Context): Promise<any> {
+async function getMessageToKek(currentMessage: any): Promise<any> {
     if (currentMessage.reply_to_message) {
         return currentMessage.reply_to_message;
     }
@@ -151,7 +150,7 @@ async function getPreviousMessage(currentMessageId: number, channelId: number): 
 
     const messages = history.messages.filter((msg): msg is Api.Message => {
         if (!(msg instanceof Api.Message)) return false;
-        if (msg.fromId instanceof Api.PeerUser && BigInt(msg.fromId.userId.toString()) == MR_KEK_ID) {
+        if (msg.fromId instanceof Api.PeerUser && msg.fromId.userId.toString() === MR_KEK_ID.toString()) {
             return /\([0-9]+\)/.test(msg.message ?? '');
         }
         return true;
@@ -175,7 +174,7 @@ function getMessageAuthor(message: any, ctx: Context): { id: number; name: strin
             return findUserById(Number(match[0].slice(1, -1)));
         }
         ctx.reply('Бля ну какой поц додумался боту поставить кек?\nПеренаправляю Лукасу');
-        return findUserById(372958499);
+        return findUserById(USERS.LUX.id);
     }
 
     return findUserById(message.from?.id ?? message.fromId?.userId);

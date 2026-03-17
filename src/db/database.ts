@@ -1,7 +1,7 @@
 import { join } from 'path';
 import { JSONFile, Low } from 'lowdb';
 import { Database, User } from './models';
-import { USERS, INITIAL_KEK_COUNT, DAY_IN_MILLIS } from '../constants';
+import { USERS, INITIAL_KEK_COUNT, DAY_IN_MILLIS, ANIME_KONFA_ID } from '../constants';
 import { findUserById } from '../utils/users';
 import { TelegramClient, Api } from 'telegram';
 
@@ -36,7 +36,7 @@ export async function resetDatabase(client: TelegramClient | undefined): Promise
 
 export async function fetchUsersFromChannel(client: TelegramClient): Promise<User[]> {
     const result = await client.invoke(new Api.channels.GetParticipants({
-        channel: -1001685837062 as any,
+        channel: ANIME_KONFA_ID as any,
         filter: new Api.ChannelParticipantsRecent(),
         limit: 100,
         offset: 0,

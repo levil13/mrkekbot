@@ -34,7 +34,7 @@ export async function handleBanMedia(ctx: Context): Promise<void> {
     // Проверяем что реплай на сообщение из казино
     const repliedText: string = repliedTo.caption ?? repliedTo.text ?? '';
     if (!repliedText.includes(CASINO_MESSAGE_MARKER)) {
-        await ctx.reply('Бля, это не казиношный мем, нечего его банить');
+        await ctx.reply('Ты ахуел? Это не казиношный мем');
         return;
     }
 
@@ -57,7 +57,7 @@ export async function handleBanMedia(ctx: Context): Promise<void> {
     }
 
     if (!fileId) {
-        await ctx.reply('Не смогла опознать мем, он такой страшный что даже забанить нельзя');
+        await ctx.reply('Хуй знает шо это за мем, я такое хуй забаню');
         return;
     }
 
@@ -66,12 +66,12 @@ export async function handleBanMedia(ctx: Context): Promise<void> {
     }
 
     if (db.data!.bannedMedia.some(b => b.fileId === fileId)) {
-        await ctx.reply('Этот кал уже забанен, дважды не прожуёшь');
+        await ctx.reply('Фух бля хорошо шо эта хуйня уже в бане и дважды банить не придется');
         return;
     }
 
     db.data!.bannedMedia.push({ fileId });
     await db.write();
 
-    await ctx.reply('Мем забанен, больше в казино не попадётся. Кал вынесен 🗑️');
+    await ctx.reply('Бля ну сорян мой проеб, больше этот КАЛ в казино не попадется');
 }

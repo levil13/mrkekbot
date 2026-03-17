@@ -34,7 +34,7 @@ async function main(): Promise<void> {
 
     bot.catch((err, ctx) => {
         console.error(`Ошибка при обработке обновления от ${ctx.from?.id}:`, err);
-        ctx.reply('Что-то пошло не так, попробуй ещё раз').catch(() => {});
+        ctx.reply('Ай млять, маслину поймал (сламалси)').catch(() => {});
     });
 
     process.once('SIGINT', () => bot.stop('SIGINT'));

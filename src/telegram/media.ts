@@ -49,13 +49,12 @@ export async function forwardRandomKek(
     requester: User
 ): Promise<boolean> {
     const client = getTelegramClient();
-    const db = getDb();
 
     try {
         const allMedia = await loadRandomMediaPage();
 
         if (!allMedia.messages.length) {
-            await ctx.reply('Не нашла медиа в канале :< Кек возвращаю');
+            await ctx.reply('Не нашел медиа в канале :< Кек возвращаю');
             return false;
         }
 
