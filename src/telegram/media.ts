@@ -79,11 +79,11 @@ export async function forwardRandomKek(
             return false;
         }
 
-        const sent = await client.invoke(new Api.messages.SendMedia({
+        await client.invoke(new Api.messages.SendMedia({
             peer: new Api.PeerChannel({ channelId: ANIME_KONFA_ID as any }),
             media: randomMessage.media as any,
-            message: `Игрок: ${requester.name}`,
-        })) as Api.Updates;
+            message: `Дебик ${requester.name} решил сыграть в Кеказино\n\nВзнос: 1 кек\n\nЗагружаю...`,
+        }))
 
         // const sentMsgId = (sent.updates[0] as Api.UpdateMessageID).id;
         // await ctx.telegram.copyMessage(Number(ANIME_KONFA_ID), Number(ANIME_KONFA_ID), sentMsgId);
