@@ -1,16 +1,16 @@
 import { Context, Telegraf } from 'telegraf';
-import { getDb, resetDatabase, fetchUsersFromChannel } from '../../db/database';
+import { getDb, resetDatabase } from '../../db/database';
 import { getTelegramClient } from '../../telegram/client';
 import { forwardRandomKek } from '../../telegram/media';
 import { collectUserStats } from '../../utils/users';
-import { USERS, WELCOME_MESSAGE, STATS_TITLE, COMMANDS_TEXT, KEK_KEYS, KEK_CASINO_KEYS, NEKEK_KEYS } from '../../constants';
+import { COMMANDS_TEXT, KEK_CASINO_KEYS, KEK_KEYS, NEKEK_KEYS, STATS_TITLE, USERS, WELCOME_MESSAGE } from '../../constants';
 
 export function registerCommands(bot: Telegraf): void {
     bot.start(onStart);
     bot.command('help', ctx => ctx.reply(COMMANDS_TEXT));
     bot.command('commands', ctx => ctx.reply(COMMANDS_TEXT));
     bot.command('keys', ctx => ctx.reply(
-        `Отправить кек: ${KEK_KEYS.join(', ')}\nЗабрать кек: ${NEKEK_KEYS.join(', ')}\nКек казино: ${KEK_CASINO_KEYS.join(', ')}`
+        `Отправить кек: ${ KEK_KEYS.join(', ') }\nЗабрать кек: ${ NEKEK_KEYS.join(', ') }\nКек казино: ${ KEK_CASINO_KEYS.join(', ') }`
     ));
     bot.command('stats', onStats);
     bot.command('reset', onReset);
@@ -20,7 +20,7 @@ export function registerCommands(bot: Telegraf): void {
 async function onStart(ctx: Context): Promise<void> {
     const userId = (ctx.message as any).from.id;
     if (userId !== USERS.LUX.id) {
-        await ctx.reply(`${findNameById(userId)}, ты шо поц? Я разрешаю себя перезагружать только Лукасу`);
+        await ctx.reply(`${ findNameById(userId) }, ты шо поц? Я разрешаю себя перезагружать только Лукасу`);
         return;
     }
 
@@ -40,7 +40,7 @@ async function onStats(ctx: Context): Promise<void> {
 async function onReset(ctx: Context): Promise<void> {
     const userId = (ctx.message as any).from.id;
     if (userId !== USERS.LUX.id) {
-        await ctx.reply(`${findNameById(userId)}, ты шо поц? Только Лукас может ресетить`);
+        await ctx.reply(`${ findNameById(userId) }, ты шо поц? Только Лукас может ресетить`);
         return;
     }
     await resetDatabase(getTelegramClient());
@@ -61,11 +61,11 @@ async function onKekCasino(ctx: Context): Promise<void> {
     }
 
     if (requester.kekNumber <= 0) {
-        await ctx.reply(`${requester.name}, у тебя нет кеков бимж, сыграть не получится`);
+        await ctx.reply(`${ requester.name }, у тебя нет кеков бимж, сыграть не получится`);
         return;
     }
 
-    await ctx.reply(`Дебик ${requester.name} решил сыграть в Кеказино\n\nВзнос: 1 кек\n\nЗагружаю...`);
+    await ctx.reply(`Дебик ${ requester.name } решил сыграть в Кеказино\n\nВзнос: 1 кек\n\nЗагружаю...`);
 
     // Кек списывается только если мем успешно отправлен
     const success = await forwardRandomKek(ctx, requester);

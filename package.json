@@ -15,8 +15,8 @@
   "dependencies": {
     "dotenv": "^16.0.0",
     "lowdb": "github:dankreiger/lowdb#chore/esm-cjs-hybrid-WITH-LIB",
-    "telegraf": "^4.8.1",
-    "telegram": "^2.7.12"
+    "telegraf": "^4.16.3",
+    "telegram": "^2.26.22"
   },
   "devDependencies": {
     "@types/node": "^20.19.37",
