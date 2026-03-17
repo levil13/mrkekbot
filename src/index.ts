@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import http from 'http';
 import { Telegraf } from 'telegraf';
 import { createTelegramClient, initTelegramClient } from './telegram/client';
 import { initDatabase } from './db/database';
@@ -37,11 +38,18 @@ async function main(): Promise<void> {
         ctx.reply('Ай млять, маслину поймал (сламалси)').catch(() => {});
     });
 
+    // Health check endpoint для мониторинга
+    const healthPort = Number(process.env.HEALTH_PORT ?? 3002);
+    http.createServer((_, res) => {
+        res.writeHead(200);
+        res.end('OK');
+    }).listen(healthPort);
+
     process.once('SIGINT', () => bot.stop('SIGINT'));
     process.once('SIGTERM', () => bot.stop('SIGTERM'));
 
     await bot.launch();
-    console.log('🤖 Мистер Кек V2.0 запущен!');
+    console.log(`🤖 Мистер Кек V2.0 запущен! Health check: http://localhost:${healthPort}/`);
 }
 
 main().catch(console.error);
