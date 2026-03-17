@@ -43,7 +43,7 @@ async function main(): Promise<void> {
             await handleKekMessage(ctx);
         } else if (isSpecificMessage(text, NEKEK_KEYS)) {
             await handleNekekMessage(ctx);
-        } else if (isSpecificMessage(text, ['#кал'])) {
+        } else if (isSpecificMessage(text, ['#кал', '#kal'])) {
             await handleBanMedia(ctx);
         } else {
             lastMessage = { authorId: from.id, messageId: message_id, date };
