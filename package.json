@@ -1,23 +1,27 @@
 {
   "name": "kek-bot",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "Мистер Кек V2.0 - TypeScript rewrite",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon --watch index.js index.js"
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "dev:watch": "nodemon --watch src --ext ts --exec ts-node src/index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.0.0",
-    "input": "^1.0.1",
     "lowdb": "github:dankreiger/lowdb#chore/esm-cjs-hybrid-WITH-LIB",
     "telegraf": "^4.8.1",
     "telegram": "^2.7.12"
   },
   "devDependencies": {
-    "nodemon": "^2.0.16"
+    "@types/node": "^20.19.37",
+    "nodemon": "^2.0.16",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   }
 }
