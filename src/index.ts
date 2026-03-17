@@ -5,7 +5,7 @@ import { initDatabase } from './db/database';
 import { registerCommands } from './bot/commands';
 import { handleKekMessage, handleNekekMessage } from './bot/handlers/kek.handler';
 import { isSpecificMessage } from './utils/text';
-import { KEK_KEYS, NEKEK_KEYS, KEK_CASINO_KEYS } from './constants';
+import { KEK_KEYS, NEKEK_KEYS } from './constants';
 
 async function main(): Promise<void> {
     const bot = new Telegraf(process.env.BOT_TOKEN!);
@@ -26,6 +26,11 @@ async function main(): Promise<void> {
         } else if (isSpecificMessage(message, NEKEK_KEYS)) {
             await handleNekekMessage(ctx);
         }
+    });
+
+    bot.catch((err, ctx) => {
+        console.error(`Ошибка при обработке обновления от ${ctx.from?.id}:`, err);
+        ctx.reply('Что-то пошло не так, попробуй ещё раз').catch(() => {});
     });
 
     process.once('SIGINT', () => bot.stop('SIGINT'));
