@@ -1,10 +1,9 @@
 import { Context, Telegraf } from 'telegraf';
 import { getDb, resetDatabase, fetchUsersFromChannel } from '../../db/database';
 import { getTelegramClient } from '../../telegram/client';
-import { loadAllMedia, forwardRandomKek } from '../../telegram/media';
+import { forwardRandomKek } from '../../telegram/media';
 import { collectUserStats } from '../../utils/users';
 import { USERS, WELCOME_MESSAGE, STATS_TITLE, COMMANDS_TEXT, KEK_KEYS, KEK_CASINO_KEYS, NEKEK_KEYS } from '../../constants';
-import { Api } from 'telegram';
 
 export function registerCommands(bot: Telegraf): void {
     bot.start(onStart);
@@ -61,12 +60,21 @@ async function onKekCasino(ctx: Context): Promise<void> {
         return;
     }
 
-    await ctx.reply(`Дебик ${requester.name} решил сыграть в Кеказино\n\nВзнос: 1 кек\n\nЗагружаю...`);
-    requester.kekNumber--;
-    await db.write();
+    if (requester.kekNumber <= 0) {
+        await ctx.reply(`${requester.name}, у тебя нет кеков бимж, сыграть не получится`);
+        return;
+    }
 
-    const allMedia = await loadAllMedia((ctx.message as any).message_id) as Api.messages.ChannelMessages;
-    await forwardRandomKek(allMedia, ctx, requester);
+    await ctx.reply(`Дебик ${requester.name} решил сыграть в Кеказино\n\nВзнос: 1 кек\n\nЗагружаю...`);
+
+    // Кек списывается только если мем успешно отправлен
+    const success = await forwardRandomKek(ctx, requester);
+
+    if (success) {
+        requester.kekNumber--;
+    }
+
+    await db.write();
 }
 
 function findNameById(id: number): string {

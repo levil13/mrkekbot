@@ -5,39 +5,66 @@ import { ANIME_KONFA_ID } from '../constants';
 import { User } from '../db/models';
 import { getDb } from '../db/database';
 
-export async function loadAllMedia(offsetId: number): Promise<Api.messages.TypeMessages> {
+const PAGE_SIZE = 100;
+
+/**
+ * Загружает одну страницу медиа из канала начиная с случайного offset.
+ * Не загружает ВСЕ медиа рекурсивно — достаточно одной страницы для рандома.
+ */
+export async function loadRandomMediaPage(): Promise<Api.messages.ChannelMessages> {
     const client = getTelegramClient();
-    const allMedia = await client.invoke(new Api.messages.Search({
+
+    // Сначала узнаём общее количество медиа в канале
+    const countResult = await client.invoke(new Api.messages.Search({
         q: '',
         peer: new Api.PeerChannel({ channelId: ANIME_KONFA_ID as any }),
         filter: new Api.InputMessagesFilterPhotoVideo(),
-        offsetId,
+        offsetId: 0,
         addOffset: 0,
-        limit: 100,
+        limit: 1,
     })) as Api.messages.ChannelMessages;
 
-    if (allMedia.messages.length < allMedia.count) {
-        const lastId = allMedia.messages[allMedia.messages.length - 1]?.id;
-        if (lastId) {
-            const nextPage = await loadAllMedia(lastId) as Api.messages.ChannelMessages;
-            allMedia.messages.push(...nextPage.messages);
-        }
+    const totalCount = countResult.count;
+
+    if (totalCount === 0) {
+        return countResult; // пустой результат
     }
 
-    return allMedia;
+    // Берём случайное смещение чтобы не грузить всё с начала
+    const randomOffset = Math.floor(Math.random() * Math.max(0, totalCount - PAGE_SIZE));
+
+    return await client.invoke(new Api.messages.Search({
+        q: '',
+        peer: new Api.PeerChannel({ channelId: ANIME_KONFA_ID as any }),
+        filter: new Api.InputMessagesFilterPhotoVideo(),
+        offsetId: 0,
+        addOffset: randomOffset,
+        limit: PAGE_SIZE,
+    })) as Api.messages.ChannelMessages;
 }
 
 export async function forwardRandomKek(
-    allMedia: Api.messages.ChannelMessages,
     ctx: Context,
     requester: User
-): Promise<void> {
+): Promise<boolean> {
     const client = getTelegramClient();
     const db = getDb();
 
     try {
+        const allMedia = await loadRandomMediaPage();
+
+        if (!allMedia.messages.length) {
+            await ctx.reply('Не нашла медиа в канале :< Кек возвращаю');
+            return false;
+        }
+
         const randomIndex = Math.floor(Math.random() * allMedia.messages.length);
         const randomMessage = allMedia.messages[randomIndex] as Api.Message;
+
+        if (!randomMessage?.media) {
+            await ctx.reply('Попался пустой пост, попробуй ещё раз. Кек возвращаю');
+            return false;
+        }
 
         const sent = await client.invoke(new Api.messages.SendMedia({
             peer: new Api.PeerChannel({ channelId: ANIME_KONFA_ID as any }),
@@ -47,9 +74,11 @@ export async function forwardRandomKek(
 
         const sentMsgId = (sent.updates[0] as Api.UpdateMessageID).id;
         await ctx.telegram.copyMessage(ctx.chat!.id, Number(ANIME_KONFA_ID), sentMsgId);
-    } catch {
-        await ctx.reply('Не загрузить рандомный мем :< Попробуй еще раз.\nКек твой я тебе возвращаю');
-        requester.kekNumber++;
-        await db.write();
+
+        return true;
+    } catch (err) {
+        console.error('forwardRandomKek error:', err);
+        await ctx.reply('Не загрузить рандомный мем :< Попробуй ещё раз. Кек возвращаю');
+        return false;
     }
 }
