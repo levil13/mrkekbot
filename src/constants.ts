@@ -2,8 +2,8 @@ export const KEK_KEYS = ['кек', 'kek', 'топкек', 'topkek', 'k3k'] as co
 export const NEKEK_KEYS = ['некек', 'nekek'] as const;
 export const KEK_CASINO_KEYS = ['кеказино', 'кек казино', 'рандомный кек', 'kekasino', 'kek casino'] as const;
 
-export const ANIME_KONFA_ID = -1685837062;
-export const MR_KEK_ID = 5362994462;
+export const ANIME_KONFA_ID = process.env.ANIME_KONFA_ID;
+export const MR_KEK_ID = process.env.MR_KEK_ID;
 
 export interface UserConfig {
     name: string;
