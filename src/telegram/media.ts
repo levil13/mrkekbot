@@ -4,6 +4,7 @@ import { getTelegramClient } from './client';
 import { ANIME_KONFA_ID } from '../constants';
 import { User } from '../db/models';
 import { getDb } from '../db/database';
+import { extractFileId } from '../bot/handlers/ban-media.handler';
 
 const PAGE_SIZE = 100;
 
@@ -58,8 +59,21 @@ export async function forwardRandomKek(
             return false;
         }
 
-        const randomIndex = Math.floor(Math.random() * allMedia.messages.length);
-        const randomMessage = allMedia.messages[randomIndex] as Api.Message;
+        const db = getDb();
+        const bannedIds = new Set((db.data?.bannedMedia ?? []).map(b => b.fileId));
+
+        const available = allMedia.messages.filter(msg => {
+            const fileId = extractFileId((msg as Api.Message).media);
+            return fileId ? !bannedIds.has(fileId) : true;
+        });
+
+        if (!available.length) {
+            await ctx.reply('Все мемы на этой странице забанены, бля. Попробуй ещё раз, подберу другие');
+            return false;
+        }
+
+        const randomIndex = Math.floor(Math.random() * available.length);
+        const randomMessage = available[randomIndex] as Api.Message;
 
         if (!randomMessage?.media) {
             await ctx.reply('Попался пустой пост, попробуй ещё раз. Кек возвращаю');

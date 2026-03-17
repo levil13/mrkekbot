@@ -4,6 +4,7 @@ import { createTelegramClient, initTelegramClient } from './telegram/client';
 import { initDatabase } from './db/database';
 import { registerCommands } from './bot/commands';
 import { handleKekMessage, handleNekekMessage } from './bot/handlers/kek.handler';
+import { handleBanMedia } from './bot/handlers/ban-media.handler';
 import { isSpecificMessage } from './utils/text';
 import { KEK_KEYS, NEKEK_KEYS } from './constants';
 
@@ -20,11 +21,14 @@ async function main(): Promise<void> {
 
     bot.on('message', async ctx => {
         const message = ctx.message as any;
+        const text: string = message.text ?? message.caption ?? '';
 
         if (isSpecificMessage(message, KEK_KEYS)) {
             await handleKekMessage(ctx);
         } else if (isSpecificMessage(message, NEKEK_KEYS)) {
             await handleNekekMessage(ctx);
+        } else if (text.trim() === '#кал') {
+            await handleBanMedia(ctx);
         }
     });
 

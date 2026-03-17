@@ -23,7 +23,12 @@ export interface MessageWithKek {
     kekedUsers: number[];
 }
 
+export interface BannedMedia {
+    fileId: string;
+}
+
 export interface Database {
     users: User[];
     messagesWithKek: MessageWithKek[];
+    bannedMedia: BannedMedia[];
 }

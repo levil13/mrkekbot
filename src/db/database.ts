@@ -22,14 +22,14 @@ export function getDb(): Low<Database> {
 export async function resetDatabase(client: TelegramClient | undefined): Promise<void> {
     if (client) {
         const users = await fetchUsersFromChannel(client);
-        db.data = { users, messagesWithKek: [] };
+        db.data = { users, messagesWithKek: [], bannedMedia: db.data?.bannedMedia ?? [] };
     } else {
         const userList = Object.values(USERS).map(u => ({
             ...u,
             kekNumber: INITIAL_KEK_COUNT,
             lastKekGivenTo: null,
         }));
-        db.data = { users: userList, messagesWithKek: [] };
+        db.data = { users: userList, messagesWithKek: [], bannedMedia: [] };
     }
     await db.write();
 }
