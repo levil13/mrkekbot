@@ -15,7 +15,7 @@ export async function handleKekMessage(ctx: Context): Promise<void> {
         return;
     }
 
-    if (authorId === MR_KEK_ID) {
+    if (authorId.toString() === MR_KEK_ID) {
         await ctx.reply('Бля ну какой поц додумался боту поставить кек?\nНу я просто в А Х У Е, перенаправляю Лукасу');
         await giveKek(message.from.id, USERS.LUX.id, messageId, ctx);
 
