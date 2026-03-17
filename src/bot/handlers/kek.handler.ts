@@ -6,7 +6,12 @@ import { MR_KEK_ID, USERS } from '../../constants';
 
 export async function handleKekMessage(ctx: Context): Promise<void> {
     const message = ctx.message as any;
-    const { messageId, authorId, date } = lastMessage
+    let { messageId, authorId, date } = lastMessage
+    if (message.reply_to_message) {
+        messageId = message.reply_to_message.message_id;
+        authorId = message.reply_to_message.from.id;
+        date = message.reply_to_message.date;
+    }
 
     if (!authorId) return;
 
