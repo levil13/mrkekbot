@@ -67,7 +67,7 @@ export async function forwardRandomKek(
         });
 
         if (!available.length) {
-            await ctx.reply('Все мемы на этой странице забанены, бля. Попробуй ещё раз, подберу другие');
+            await ctx.reply('Все мемы на этой странице забанены, бля. Попробуй ещё раз, подберу другие. Кек возвращаю');
             return false;
         }
 
@@ -82,7 +82,7 @@ export async function forwardRandomKek(
         await client.invoke(new Api.messages.SendMedia({
             peer: new Api.PeerChannel({ channelId: ANIME_KONFA_ID as any }),
             media: randomMessage.media as any,
-            message: `Дебик ${requester.name} решил сыграть в Кеказино\n\nВзнос: 1 кек\n\nЗагружаю...`,
+            message: `Дебик ${requester.name} решил сыграть в Кеказино\n\nВзнос: 1 кек`,
         }))
 
         // const sentMsgId = (sent.updates[0] as Api.UpdateMessageID).id;

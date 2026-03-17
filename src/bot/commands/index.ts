@@ -65,8 +65,6 @@ async function onKekCasino(ctx: Context): Promise<void> {
         return;
     }
 
-    await ctx.reply(`Дебик ${ requester.name } решил сыграть в Кеказино\n\nВзнос: 1 кек\n\nЗагружаю...`);
-
     // Кек списывается только если мем успешно отправлен
     const success = await forwardRandomKek(ctx, requester);
 
