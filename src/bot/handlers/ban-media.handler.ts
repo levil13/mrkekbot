@@ -3,7 +3,7 @@ import { Api } from 'telegram';
 import { getDb } from '../../db/database';
 
 // Маркер по которому определяем что сообщение из казино
-const CASINO_MESSAGE_MARKER = 'Игрок:';
+const CASINO_MESSAGE_MARKER = 'Взнос: 1 кек';
 
 export function extractFileId(media: unknown): string | null {
     if (!media) return null;
