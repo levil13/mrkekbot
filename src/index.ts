@@ -6,8 +6,9 @@ import { initDatabase } from './db/database';
 import { registerCommands } from './bot/commands';
 import { handleKekMessage, handleNekekMessage } from './bot/handlers/kek.handler';
 import { handleBanMedia } from './bot/handlers/ban-media.handler';
+import { handleKekCasino } from './bot/handlers/casino.handler';
 import { isSpecificMessage } from './utils/text';
-import { KEK_KEYS, NEKEK_KEYS } from './constants';
+import { KEK_CASINO_KEYS, KEK_KEYS, KAL_KEYS, NEKEK_KEYS } from './constants';
 
 export let lastMessage: { authorId: number, messageId: number, date: number } = { authorId: 0, messageId: 0, date: 0 }
 
@@ -43,7 +44,9 @@ async function main(): Promise<void> {
             await handleKekMessage(ctx);
         } else if (isSpecificMessage(text, NEKEK_KEYS)) {
             await handleNekekMessage(ctx);
-        } else if (isSpecificMessage(text, ['#кал', '#kal'])) {
+        } else if (isSpecificMessage(text, KEK_CASINO_KEYS)) {
+            await handleKekCasino(ctx);
+        } else if (isSpecificMessage(text, KAL_KEYS)) {
             await handleBanMedia(ctx);
         } else {
             lastMessage = { authorId: from.id, messageId: message_id, date };
