@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import http from 'http';
 import { Context, Telegraf } from 'telegraf';
 import { createTelegramClient, initTelegramClient } from './telegram/client';
 import { initDatabase } from './db/database';
@@ -8,7 +7,7 @@ import { handleKekMessage, handleNekekMessage } from './bot/handlers/kek.handler
 import { handleBanMedia } from './bot/handlers/ban-media.handler';
 import { handleKekCasino } from './bot/handlers/casino.handler';
 import { isSpecificMessage } from './utils/text';
-import { KEK_CASINO_KEYS, KEK_KEYS, KAL_KEYS, NEKEK_KEYS } from './constants';
+import { KAL_KEYS, KEK_CASINO_KEYS, KEK_KEYS, NEKEK_KEYS } from './constants';
 
 export let lastMessage: { authorId: number, messageId: number, date: number } = { authorId: 0, messageId: 0, date: 0 }
 
@@ -58,18 +57,8 @@ async function main(): Promise<void> {
         ctx.reply('Ай млять, маслину поймал (сламалси)')
     });
 
-    // Health check endpoint для мониторинга
-    const healthPort = Number(process.env.HEALTH_PORT ?? 3002);
-    http.createServer((_, res) => {
-        res.writeHead(200);
-        res.end('OK');
-    }).listen(healthPort);
-
-    process.once('SIGINT', () => bot.stop('SIGINT'));
-    process.once('SIGTERM', () => bot.stop('SIGTERM'));
-
-    await bot.launch({ dropPendingUpdates: true });
-    console.log(`🤖 Мистер Кек V2.0 запущен! Health check: http://localhost:${ healthPort }/`);
+    bot.launch(() => console.log(`🤖 Мистер Кек V2.0 запущен!`))
+        .catch((err) => console.log(err))
 }
 
 main().catch(console.error);

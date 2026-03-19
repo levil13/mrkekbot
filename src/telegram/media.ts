@@ -67,7 +67,7 @@ export async function forwardRandomKek(
         });
 
         if (!available.length) {
-            await ctx.reply('Все мемы на этой странице забанены, бля. Попробуй ещё раз, подберу другие. Кек возвращаю');
+            await ctx.reply('Все мемы на этой странице забанены, ну и хуйня...\nПопробуй ещё раз, подберу другие. Кек возвращаю');
             return false;
         }
 
@@ -84,9 +84,6 @@ export async function forwardRandomKek(
             media: randomMessage.media as any,
             message: `Дебик ${requester.name} решил сыграть в Кеказино\n\nВзнос: 1 кек`,
         }))
-
-        // const sentMsgId = (sent.updates[0] as Api.UpdateMessageID).id;
-        // await ctx.telegram.copyMessage(Number(ANIME_KONFA_ID), Number(ANIME_KONFA_ID), sentMsgId);
 
         return true;
     } catch (err) {
