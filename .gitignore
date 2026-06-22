@@ -1,5 +1,13 @@
 /node_modules
+node_modules
+dist
+
+# Secrets — never commit any .env file or session string
 .env
+.env.*
+!.env.example
+
 .idea
 kek-bot.iml
 package-lock.json
+.planning/

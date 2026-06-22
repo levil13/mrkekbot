@@ -1,0 +1,31 @@
+{
+  "name": "mrkekbot",
+  "version": "1.0.0",
+  "description": "Mr. Kek (Мистер Кек) — Telegram group-chat kek-currency bot (TypeScript rewrite)",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "dev": "doppler run -- tsx watch src/main.ts",
+    "dev:local": "tsx watch src/main.ts",
+    "start": "doppler run -- node dist/main.js",
+    "start:local": "node dist/main.js",
+    "login": "doppler run -- tsx src/scripts/login.ts",
+    "login:local": "tsx src/scripts/login.ts"
+  },
+  "dependencies": {
+    "dotenv": "^17",
+    "grammy": "^1.44",
+    "pino": "^10",
+    "telegram": "^2.26",
+    "zod": "^4"
+  },
+  "devDependencies": {
+    "pino-pretty": "^13",
+    "tsx": "^4",
+    "typescript": "5.9.x"
+  }
+}
