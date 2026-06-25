@@ -17,9 +17,11 @@
     "login:local": "tsx src/scripts/login.ts"
   },
   "dependencies": {
+    "agent-base": "^8.0.0",
     "dotenv": "^17",
     "grammy": "^1.44",
     "pino": "^10",
+    "socks": "^2.8.9",
     "telegram": "^2.26",
     "zod": "^4"
   },

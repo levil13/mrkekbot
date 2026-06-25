@@ -13,57 +13,65 @@
  * ONLY. The session is never written to a file — copy it into Doppler/.env as
  * SESSION_KEY and never commit it.
  */
-import { TelegramClient } from "telegram";
+import { TelegramClient } from "telegram"
 // Explicit NodeNext subpath (RESEARCH Pitfall 5).
-import { StringSession } from "telegram/sessions/index.js";
+import { StringSession } from "telegram/sessions/index.js"
 // Zero-dependency terminal prompts (RESEARCH Open Question 1 — preferred over
 // the third-party `input` package).
-import { createInterface } from "node:readline/promises";
-import { stdin as input, stdout as output } from "node:process";
+import { createInterface } from "node:readline/promises"
+import { stdin as input, stdout as output } from "node:process"
+
+const PROXY_SETTINGS = { ip: '127.0.0.1', port: 10808, socksType: 5 as 5 }
 
 async function main(): Promise<void> {
-  const apiId = Number(process.env.API_ID);
-  const apiHash = String(process.env.API_HASH ?? "");
-  if (!Number.isInteger(apiId) || apiId <= 0 || apiHash.length === 0) {
-    console.error(
-      "API_ID and API_HASH must be set in the environment (Doppler or .env) before running login.",
-    );
-    process.exit(1);
-  }
+    const apiId = Number(process.env.API_ID)
+    const apiHash = String(process.env.API_HASH ?? "")
+    if (!Number.isInteger(apiId) || apiId <= 0 || apiHash.length === 0) {
+        console.error(
+            "API_ID and API_HASH must be set in the environment (Doppler or .env) before running login.",
+        )
+        process.exit(1)
+    }
 
-  const rl = createInterface({ input, output });
+    const rl = createInterface({ input, output })
 
-  // Start from an EMPTY session — this is a fresh login, not a reconnect.
-  const client = new TelegramClient(new StringSession(""), apiId, apiHash, {
-    connectionRetries: 5,
-  });
+    // Start from an EMPTY session — this is a fresh login, not a reconnect.
+    // No proxy
+    const client = new TelegramClient(new StringSession(""), apiId, apiHash, {
+        connectionRetries: 5
+    })
 
-  try {
-    await client.start({
-      phoneNumber: async () =>
-        (await rl.question("Phone (international format, e.g. +123456789): ")).trim(),
-      password: async () =>
-        (await rl.question("2FA password (leave blank if none): ")).trim(),
-      phoneCode: async () =>
-        (await rl.question("Login code from Telegram: ")).trim(),
-      onError: (err) => console.error("login error:", err),
-    });
+    // Yes proxy
+    // const client = new TelegramClient(new StringSession(""), apiId, apiHash, {
+    //     connectionRetries: 5, proxy: PROXY_SETTINGS
+    // })
 
-    // Print to STDOUT only — never persist to a tracked file.
-    console.log(
-      "\n=== Fresh StringSession — store as SESSION_KEY in Doppler/.env, NEVER commit ===\n",
-    );
-    console.log(client.session.save());
-    console.log("\n=== end StringSession ===\n");
-  } finally {
-    rl.close();
-    await client.disconnect();
-  }
+    try {
+        await client.start({
+            phoneNumber: async () =>
+                (await rl.question("Phone (international format, e.g. +123456789): ")).trim(),
+            password: async () =>
+                (await rl.question("2FA password (leave blank if none): ")).trim(),
+            phoneCode: async () =>
+                (await rl.question("Login code from Telegram: ")).trim(),
+            onError: (err) => console.error("login error:", err),
+        })
 
-  process.exit(0);
+        // Print to STDOUT only — never persist to a tracked file.
+        console.log(
+            "\n=== Fresh StringSession — store as SESSION_KEY in Doppler/.env, NEVER commit ===\n",
+        )
+        console.log(client.session.save())
+        console.log("\n=== end StringSession ===\n")
+    } finally {
+        rl.close()
+        await client.disconnect()
+    }
+
+    process.exit(0)
 }
 
 main().catch((err: unknown) => {
-  console.error("fatal: login failed", err);
-  process.exit(1);
-});
+    console.error("fatal: login failed", err)
+    process.exit(1)
+})

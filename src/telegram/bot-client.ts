@@ -11,14 +11,29 @@
  *     Pitfall 1). This module therefore never awaits `start()` and never
  *     calls it itself.
  */
-import { Bot } from "grammy";
-import type { Config } from "../config/env.js";
+import { Bot } from "grammy"
+import type { Config } from "../config/env.js"
+import { SocksAgent } from '../scripts/socks-agent.js'
 
 /**
  * Construct the grammY {@link Bot} from {@link Config}. Returns the bot so the
  * composition root can `await bot.init()` (readiness), fire `bot.start({...})`
  * unawaited (long poll), and `bot.stop()` on shutdown.
  */
+
+const PROXY_SETTINGS = {
+    client: {
+        baseFetchConfig: {
+            agent: new SocksAgent('socks5://127.0.0.1:10808'),
+            compress: true
+        }
+    }
+}
+
 export function buildBotClient(config: Config): Bot {
-  return new Bot(config.BOT_TOKEN);
+    // No Proxy
+    return new Bot(config.BOT_TOKEN);
+
+    // Yes Proxy
+    // return new Bot(config.BOT_TOKEN, PROXY_SETTINGS)
 }
