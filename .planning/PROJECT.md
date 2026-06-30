@@ -68,7 +68,7 @@ flavor on top of that.
 
 ## Constraints
 
-- **Tech stack**: Node.js + TypeScript — type safety on the balance/state logic while reusing the telegraf + GramJS ecosystem
+- **Tech stack**: Node.js 22 + TypeScript 5.9 — grammY for the Bot API client (telegraf is maintainer-declared dead), GramJS for the MTProto user client, lowdb v7 + async-mutex for state, tsx + vitest for tooling
 - **Storage**: JSON file (lowdb-style) with a serialized write queue / locking — fix races without DB ops overhead
 - **Architecture**: Dual-client (telegraf Bot API + GramJS MTProto user client) — required for casino/media features
 - **Deployment**: Docker / VPS, long-running process, env-based config — replaces the old App Engine / Heroku setup
@@ -80,7 +80,7 @@ flavor on top of that.
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Node.js + TypeScript | Type safety on balance/state logic; reuse telegraf/GramJS | — Pending |
+| Node.js 22 + TypeScript 5.9; grammY over telegraf | Type safety on balance/state logic; telegraf is maintainer-declared dead, grammY is its TS-native successor | — Pending |
 | Keep dual-client (Bot + MTProto user) | Casino/media features need user-account capabilities Bot API lacks | — Pending |
 | JSON file + serialized write queue | Fix concurrency bugs without adopting a real DB for a small group | — Pending |
 | Hardcode participant names, env everything else | Names are part of the joke; secrets/chat IDs must not be in source | — Pending |
